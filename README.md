@@ -9,7 +9,10 @@ To use it:
 
 - Set up a slackline-node instance
 ```
-node server.js
+$ git clone https://github.com/mxk0/slackline-node
+$ cd slackline-node
+$ npm install
+$ node server.js
 ```
 
 Set up the necessary Slack integrations:
