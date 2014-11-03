@@ -7,9 +7,13 @@ Slackline is a web hook bridge that allows you to mirror channels across Slack t
 
 To use it:
 
-- Set up a slackline-node instance
+- Clone the project, and populate settings.js with API keys from the two target Slack instances
 ```
 $ git clone https://github.com/mxk0/slackline-node
+```
+
+- Set up a slackline-node instance
+```
 $ cd slackline-node
 $ npm install
 $ node server.js
