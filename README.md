@@ -1,7 +1,7 @@
 slackline-node
 ==============
 
-A Node.js implementation of [Slackline](https://github.com/ernesto-jimenez/slackline).
+A Node.js implementation of [Slackline](https://github.com/ernesto-jimenez/slackline), with Gravatar support.
 
 Slackline is a web hook bridge that allows you to mirror channels across Slack teams.
 
