@@ -1,8 +1,8 @@
 var settings = {};
 
 settings.tokens = {
-	'[FIRST SLACK INSTANCE]' : 'FIRST API KEY',
-	'[SECOND SLACK INSTANCE]' : 'SECOND API KEY'
+	'[FIRST SLACK INSTANCE]' : 'SECOND INSTANCE API KEY',
+	'[SECOND SLACK INSTANCE]' : 'FIRST INSTANCE API KEY'
 };
 
 settings.postUrl = '/services/hooks/incoming-webhook?token=';
