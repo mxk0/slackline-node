@@ -50,11 +50,14 @@ router.all('/bridge', function(req, res) {
 		return
 	} else {
 		getHash(userid, target_domain, function(err, email_hash){
-			var cleanText = fixMentions(text, target_domain);
-			sendPost(email_hash, username, cleanText, target_domain, target_hook_token);
+			fixMentions(text, target_domain, function(err, cleanText){
+				sendPost(email_hash, username, cleanText, target_domain, target_hook_token);
+			});
 		});
-		console.log(text);
-		
+		// fixMentions(text, target_domain, function(err, text){
+		// 	console.log(text);
+		// });
+
 		// TO DO: only fire success message when sendPost actually finishes (via a callback)
 		res.end('Message forwarded!');
 	};
@@ -74,25 +77,65 @@ console.log('slackline is running on port ' + port);
 // ========================================================================================
 
 
-var mentionMap = {
-	'<@U02SL0VER>': 'max',
-	'<@U02S1JF1T>': 'brian'
-}
+var mentionMap = {}
 
 // takes a raw Slack message as an input, returns a cleaned string with any @ mentions converted to the relevant usernames
-function fixMentions(text, target_domain){
+function fixMentions(text, target_domain, next){
 	var strText = text;
-	var userPattern = new RegExp(/<@([^>]+)>/igm);
+	var userPattern = /<@([^>]+)>/igm;
 	var userArray = strText.match(userPattern);
+	console.log(userArray);
 
-	for (i = 0; i < userArray.length + 1; i++) {
-		if (mentionMap[userArray[i]]) {
-			var strUserid = userArray[i];
-			strText = strText.replace(strUserid, '<https://' + target_domain + '/team/' + mentionMap[strUserid] + '|@' + mentionMap[strUserid] + '>');
-		};
+	if (userArray) {
+		var counter = 0;
+
+		userArray.forEach(function(strUseridRaw){
+			if (mentionMap[strUseridRaw]) {
+				strText = strText.replace(strUseridRaw, '<https://' + target_domain + '/team/' + mentionMap[strUseridRaw] + '|@' + mentionMap[strUseridRaw] + '>');
+				console.log('route1');
+				counter += 1;
+				if (counter == (userArray.length)) {
+					next(null, strText);
+				}
+			} else {
+				var strUserid = strUseridRaw.substring(2, strUseridRaw.length -1);
+
+				// get the sender's domain from settings.js
+				var referrer_domain = settings.domainReferrer[target_domain];
+
+				// use the sender's domain and userid to grab their user info from the Slack API
+				var url = 'https://slack.com/api/users.info?token=' + settings.tokens[referrer_domain] + '&user=' + strUserid;
+				console.log(url);
+
+				https.get(url, function(res) {
+					var body = '';
+
+					res.on('data', function(chunk) {
+						body += chunk;
+					});
+
+					res.on('end', function() {
+						var userResponse = JSON.parse(body);
+						console.log(userResponse);
+						var username = userResponse.user.name;
+						mentionMap[strUseridRaw] = username;
+						strText = strText.replace(strUseridRaw, '<https://' + target_domain + '/team/' + username + '|@' + username + '>');
+						console.log('Run:');
+						console.log(counter);
+						counter += 1;
+						if (counter == (userArray.length)) {
+							next(null, strText);
+						}
+					});
+				}).on('error', function(e) {
+					console.log('Got error: ' + e);
+				});
+			}
+		});
+	} else {
+		next(null, text);
 	};
-	return strText;
-}
+};
 
 
 // cache of hashed email addresses, used for Gravatar URLs
@@ -111,7 +154,6 @@ function getHash(userid, target_domain, next) {
 
 		// use the sender's domain and userid to grab their user info from the Slack API
 		var url = 'https://slack.com/api/users.info?token=' + settings.tokens[referrer_domain] + '&user=' + userid;
-		//console.log(url);
 
 		https.get(url, function(res) {
 			var body = '';
