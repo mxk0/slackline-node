@@ -1,0 +1,12 @@
+[Service]
+ExecStart=[NODE BINARY] /[PATH TO APP]/slackline-node/server.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=slackline-node
+User=[USER]
+Group=[GROUP]
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
