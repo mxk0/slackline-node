@@ -2,15 +2,13 @@ var settings = {};
 
 // Slack API tokens
 settings.tokens = {
-	'trello.slack.com' : '[API token]',
-	'fogcreek-trello.slack.com' : '[API token]',
-
-};
+	'[FIRST SLACK INSTANCE]' : '[FIRST API KEY]',
+	'[SECOND SLACK INSTANCE]' : '[SECOND API KEY]',
+}
 
 settings.domainReferrer = {
-	'fogcreek-trello.slack.com' : 'trello.slack.com',
-	'trello.slack.com' : 'fogcreek-trello.slack.com',
-	//'fogcreek.slack.com' : 'trello.slack.com'
+	'[FIRST SLACK INSTANCE]' : '[SECOND SLACK INSTANCE]',
+	'[SECOND SLACK INSTANCE]' : '[FIRST SLACK INSTANCE]'
 }
 
 settings.postUrl = '/services/hooks/incoming-webhook?token=';
