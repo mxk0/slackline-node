@@ -54,9 +54,6 @@ router.all('/bridge', function(req, res) {
 				sendPost(email_hash, username, cleanText, target_domain, target_hook_token);
 			});
 		});
-		// fixMentions(text, target_domain, function(err, text){
-		// 	console.log(text);
-		// });
 
 		// TO DO: only fire success message when sendPost actually finishes (via a callback)
 		res.end('Message forwarded!');
@@ -84,7 +81,6 @@ function fixMentions(text, target_domain, next){
 	var strText = text;
 	var userPattern = /<@([^>]+)>/igm;
 	var userArray = strText.match(userPattern);
-	console.log(userArray);
 
 	if (userArray) {
 		var counter = 0;
@@ -92,7 +88,6 @@ function fixMentions(text, target_domain, next){
 		userArray.forEach(function(strUseridRaw){
 			if (mentionMap[strUseridRaw]) {
 				strText = strText.replace(strUseridRaw, '<https://' + target_domain + '/team/' + mentionMap[strUseridRaw] + '|@' + mentionMap[strUseridRaw] + '>');
-				console.log('route1');
 				counter += 1;
 				if (counter == (userArray.length)) {
 					next(null, strText);
@@ -105,7 +100,6 @@ function fixMentions(text, target_domain, next){
 
 				// use the sender's domain and userid to grab their user info from the Slack API
 				var url = 'https://slack.com/api/users.info?token=' + settings.tokens[referrer_domain] + '&user=' + strUserid;
-				console.log(url);
 
 				https.get(url, function(res) {
 					var body = '';
@@ -116,12 +110,9 @@ function fixMentions(text, target_domain, next){
 
 					res.on('end', function() {
 						var userResponse = JSON.parse(body);
-						console.log(userResponse);
 						var username = userResponse.user.name;
 						mentionMap[strUseridRaw] = username;
 						strText = strText.replace(strUseridRaw, '<https://' + target_domain + '/team/' + username + '|@' + username + '>');
-						console.log('Run:');
-						console.log(counter);
 						counter += 1;
 						if (counter == (userArray.length)) {
 							next(null, strText);
