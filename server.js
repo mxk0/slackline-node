@@ -87,7 +87,7 @@ function fixMentions(text, target_domain, next){
 
 		userArray.forEach(function(strUseridRaw){
 			if (mentionMap[strUseridRaw]) {
-				strText = strText.replace(strUseridRaw, '<https://' + target_domain + '/team/' + mentionMap[strUseridRaw] + '|@' + mentionMap[strUseridRaw] + '>');
+				strText = strText.replace(strUseridRaw, '@' + mentionMap[strUseridRaw]);
 				counter += 1;
 				if (counter == (userArray.length)) {
 					next(null, strText);
@@ -112,7 +112,7 @@ function fixMentions(text, target_domain, next){
 						var userResponse = JSON.parse(body);
 						var username = userResponse.user.name;
 						mentionMap[strUseridRaw] = username;
-						strText = strText.replace(strUseridRaw, '<https://' + target_domain + '/team/' + username + '|@' + username + '>');
+						strText = strText.replace(strUseridRaw, '@' + username);
 						counter += 1;
 						if (counter == (userArray.length)) {
 							next(null, strText);
